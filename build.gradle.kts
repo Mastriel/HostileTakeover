@@ -31,7 +31,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-alpha.9")
     implementation("com.github.minndevelopment:jda-ktx:9f01b74")
 
-    implementation(compose.desktop.windows_x64)
+    implementation(compose.desktop.currentOs)
 }
 
 tasks.withType<ShadowJar> {
