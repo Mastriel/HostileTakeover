@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +26,11 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.JDA
+import xyz.mastriel.hostiletakeover.discord.Discord
 import xyz.mastriel.hostiletakeover.discord.HTBot
+import xyz.mastriel.hostiletakeover.discord.discordInitialized
+import xyz.mastriel.hostiletakeover.discord.status
 import java.lang.Exception
 import kotlin.system.exitProcess
 
@@ -35,11 +40,10 @@ fun main() = application {
     Window(
         onCloseRequest = ::onExit,
         title = "Hostile Takeover",
-        state = rememberWindowState(width = 300.dp, height = 565.dp),
+        state = rememberWindowState(width = 350.dp, height = 600.dp),
         resizable = true,
 
     ) {
-
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Black)
                 .padding(4.dp)
@@ -77,11 +81,13 @@ fun main() = application {
                         UserInput("Bot Token", settings.token, maxChars = 300, hidden = true)
                         SaveChanges()
                     }
+                    val discStatus by status
                     OptionText(
-                        label = "Status: Connected",
-                        modifier = Modifier.align(Alignment.BottomCenter),
+                        label = "Status: ${discStatus.name}",
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp),
                         font = LightFont
                     )
+
                 }
             }
         }
@@ -108,7 +114,8 @@ fun OptionText(label: String,
                size: TextUnit = 16.sp,
                modifier: Modifier = Modifier,
                font: FontFamily = BoldFont,
-               color: Color = Color.White
+               color: Color = Color.White,
+               onTextLayout: (TextLayoutResult) -> Unit = {}
 ) {
     Text(
         text = label,
@@ -116,7 +123,8 @@ fun OptionText(label: String,
         color = color,
         textAlign = TextAlign.Center,
         fontFamily = font,
-        modifier = modifier
+        modifier = modifier,
+        onTextLayout = onTextLayout
     )
 }
 
@@ -174,6 +182,7 @@ fun UserInput(label: String,
 @Composable
 fun SaveChanges() = Column(modifier = Modifier.fillMaxWidth()) {
     val color = remember { mutableStateOf(Color.White) }
+    val enabled = remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     Button(
         colors = ButtonDefaults.buttonColors(
@@ -181,6 +190,8 @@ fun SaveChanges() = Column(modifier = Modifier.fillMaxWidth()) {
         ),
         onClick = {
             scope.launch {
+                if (!enabled.value) return@launch
+                enabled.value = false
                 val started = HTBot.start()
                 delay(250L)
                 if (started) {
@@ -192,6 +203,7 @@ fun SaveChanges() = Column(modifier = Modifier.fillMaxWidth()) {
                     delay(500L)
                     color.value = Color.White
                 }
+                enabled.value = true
             }
         },
         modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 10.dp),
