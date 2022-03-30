@@ -6,7 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import xyz.mastriel.hostiletakeover.ConsoleLine
 import xyz.mastriel.hostiletakeover.UserSettings
+import xyz.mastriel.hostiletakeover.discord.HTBot
 import xyz.mastriel.hostiletakeover.serializers.MutableBoolean
 import java.awt.GraphicsEnvironment
 import java.awt.Rectangle
@@ -35,6 +37,8 @@ object ScreenshotCommand : HTCommand() {
         edit.queue()
 
         e.hook.editOriginal(tempFile.readBytes(), "image.png").await()
+
+        HTBot.log("${e.user.asTag} took a screenshot!", ConsoleLine.Severity.WARN)
 
         File("./screenshot.png").delete()
     }

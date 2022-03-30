@@ -9,17 +9,24 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import xyz.mastriel.hostiletakeover.serializers.MutableBoolean
+import xyz.mastriel.hostiletakeover.serializers.MutableLong
 import xyz.mastriel.hostiletakeover.serializers.MutableString
 import java.io.File
 
 @Serializable
 open class UserSettings private constructor() {
     val allowScreenshots: MutableBoolean = mutableStateOf(false)
+    val screenshotCooldown: MutableLong = mutableStateOf(15000L)
+
     val allowCamera: MutableBoolean = mutableStateOf(false)
     val allowScripting: MutableBoolean = mutableStateOf(false)
+
+    val allowTerminal: MutableBoolean = mutableStateOf(false)
+    val terminalCooldown: MutableLong = mutableStateOf(60000L)
+
     val allowTyping: MutableBoolean = mutableStateOf(false)
     val allowInputs: MutableBoolean = mutableStateOf(false)
-    val username: MutableString = mutableStateOf("")
+    val username: MutableString = mutableStateOf("Default")
     val token: MutableString = mutableStateOf("")
 
     fun save() {

@@ -12,6 +12,7 @@ import kotlinx.serialization.encoding.Encoder
 
 typealias MutableBoolean = @Serializable(with = MutableBooleanSerializer::class) MutableState<Boolean>
 typealias MutableString = @Serializable(with = MutableStringSerializer::class) MutableState<String>
+typealias MutableLong = @Serializable(with = MutableLongSerializer::class) MutableState<Long>
 
 interface MutableStateSerializer<T> : KSerializer<MutableState<T>>
 
@@ -39,6 +40,20 @@ object MutableStringSerializer : MutableStateSerializer<String> {
 
     override fun serialize(encoder: Encoder, value: MutableState<String>) {
         encoder.encodeString(value.value)
+    }
+
+}
+
+object MutableLongSerializer : MutableStateSerializer<Long> {
+    override fun deserialize(decoder: Decoder): MutableState<Long> {
+        return mutableStateOf(decoder.decodeString().toLong())
+    }
+
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("Long", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: MutableState<Long>) {
+        encoder.encodeString(value.value.toString())
     }
 
 }
