@@ -2,20 +2,13 @@ package xyz.mastriel.hostiletakeover
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.mouse.mouseScrollFilter
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.PointerInputFilter
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -24,7 +17,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +42,9 @@ fun main() = application {
         resizable = true,
     ) {
         this.window.minimumSize = Dimension(550, 630)
+        HTBot.repeatingTask(25L) {
+            consoleScroll.value.scrollTo(Int.MAX_VALUE)
+        }
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Black)
                 .padding(4.dp)
@@ -110,8 +105,8 @@ fun main() = application {
                         ToggleButton(
                             label = "Allow Inputs",
                             mutableState = settings.allowInputs,
-                            cooldownState = null,
-                            enabled = false
+                            cooldownState = settings.inputCooldown,
+                            enabled = true
                         )
                         UserInput("Username", settings.username)
                         Box(modifier = Modifier.padding(top = 15.dp))
@@ -312,12 +307,12 @@ fun StartBotButton() = Column(modifier = Modifier.fillMaxWidth()) {
 
 val consoleLines = mutableStateListOf<ConsoleLine>()
 
+val consoleScroll = mutableStateOf(ScrollState(Int.MAX_VALUE))
 
 
 @Composable
 fun Console() {
     MiniText("Logger", modifier = Modifier.offset(y = 6.dp))
-    val scroll = rememberScrollState(Int.MAX_VALUE)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -328,11 +323,11 @@ fun Console() {
                 end = 10.dp
             )
             .border(BorderStroke(2.dp, Color.White))
-            .verticalScroll(scroll, false),
+            .verticalScroll(consoleScroll.value, false),
         contentAlignment = Alignment.TopStart
     ) {
         rememberCoroutineScope().launch {
-            scroll.scrollTo(Int.MAX_VALUE)
+            consoleScroll.value.scrollTo(Int.MAX_VALUE)
         }
         SelectionContainer {
             Column(

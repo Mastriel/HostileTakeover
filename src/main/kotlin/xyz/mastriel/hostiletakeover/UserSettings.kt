@@ -25,7 +25,10 @@ open class UserSettings private constructor() {
     val terminalCooldown: MutableLong = mutableStateOf(60000L)
 
     val allowTyping: MutableBoolean = mutableStateOf(false)
+
     val allowInputs: MutableBoolean = mutableStateOf(false)
+    val inputCooldown: MutableLong = mutableStateOf(5000L)
+
     val username: MutableString = mutableStateOf("Default")
     val token: MutableString = mutableStateOf("")
 

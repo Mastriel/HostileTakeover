@@ -24,6 +24,9 @@ object ScreenshotCommand : HTCommand() {
     override val requiredConsent: MutableBoolean
         get() = UserSettings().allowScreenshots
 
+    override val cooldown: Long
+        get() = UserSettings().screenshotCooldown.value
+
     override suspend fun execute(e: SlashCommandInteractionEvent) {
         val bufferedImage = captureMainMonitor()
 

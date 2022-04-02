@@ -22,7 +22,16 @@ sealed class HTCommand {
 
     val cooldowns : HashMap<User, Instant> = hashMapOf()
 
+    open val cooldown : Long = 0
+
     val fullCommandName get() = "/control-${HTBot.username.lowercase()} ${command.name}"
+
+    fun resetCooldown(user: User) {
+        cooldowns.remove(user)
+    }
+
+    val errorColor = 0xf55142
+    val successColor = 0x85ff78
 
     companion object {
 
@@ -47,9 +56,10 @@ sealed class HTCommand {
                 }
         }
 
-        val subcommandInstances: List<HTCommand> = listOf(
+        private val subcommandInstances: List<HTCommand> = listOf(
             ScreenshotCommand,
-            TerminalCommand
+            TerminalCommand,
+            PressKeyCommand
         )
 
         suspend fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
@@ -70,7 +80,7 @@ sealed class HTCommand {
                     }
                     val expiry = subcommand.cooldowns[event.user] ?: Instant.now().minusMillis(1000)
                     if (expiry.isAfter(Instant.now())) {
-                        val difference = expiry.epochSecond - Instant.now().toEpochMilli()
+                        val difference = expiry.toEpochMilli() - Instant.now().toEpochMilli()
                         val time = getTimeRepresentation(difference)
                         event.replyEmbeds(
                             Embed {
@@ -83,6 +93,7 @@ sealed class HTCommand {
                         return
 
                     }
+                    subcommand.cooldowns[event.user] = Instant.now().plusMillis(subcommand.cooldown)
                     subcommand.execute(event)
                 }
             }
