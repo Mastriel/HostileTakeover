@@ -45,6 +45,11 @@ compose.desktop {
         args += "-opt-in=kotlin.RequiresOptIn"
         nativeDistributions {
             targetFormats(TargetFormat.AppImage, TargetFormat.Exe)
+
+            windows {
+                upgradeUuid = "xyz.mastriel.hostiletakeover"
+                shortcut = true
+            }
         }
     }
 }
