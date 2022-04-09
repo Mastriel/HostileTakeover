@@ -47,7 +47,7 @@ compose.desktop {
             targetFormats(TargetFormat.AppImage, TargetFormat.Exe)
 
             windows {
-                upgradeUuid = "xyz.mastriel.hostiletakeover"
+                upgradeUuid = "b9746cd7-6d03-4d2a-8bae-dad1f0a02932"
                 shortcut = true
             }
         }
